@@ -4,6 +4,8 @@ using System.Text;
 
 public class GridView : MonoBehaviour
 {
+	public TileColors tileColors;
+
 	private Text output;
 	private int[,] grid;
 
@@ -34,8 +36,12 @@ public class GridView : MonoBehaviour
 		{
 			for (int c = 0; c < columns; c++)
 			{
-				sb.Append(grid[r, c]);
-				sb.Append(" ");
+				int type = grid[r, c];
+				sb.Append("<color=#");
+				sb.Append(ColorUtility.ToHtmlStringRGB(tileColors.colors[type]));
+				sb.Append(">");
+				sb.Append(type);
+				sb.Append("</color> ");
 			}
 			sb.AppendLine();
 		}

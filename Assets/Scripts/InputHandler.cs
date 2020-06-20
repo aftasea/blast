@@ -2,7 +2,7 @@
 
 public class InputHandler : MonoBehaviour
 {
-	public event System.Action<int /*row*/, int /*col*/> OnTap;
+	public event System.Action<GridPosition> OnTap;
 
 	private void Update()
 	{
@@ -13,7 +13,7 @@ public class InputHandler : MonoBehaviour
 			int col = Mathf.FloorToInt(mouseWorldPos.x);
 
 			if (row >= 0 && col >= 0)
-				OnTap?.Invoke(row, col);
+				OnTap?.Invoke(new GridPosition(row, col));
 		}
 	}
 }

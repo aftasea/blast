@@ -7,6 +7,8 @@ public class Tile : MonoBehaviour
 {
 	private SpriteRenderer spriteRenderer;
 
+	private Color tileColor; 
+
 	private void Awake()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
@@ -25,19 +27,18 @@ public class Tile : MonoBehaviour
 	public void SetColor(Color c)
 	{
 		spriteRenderer.color = c;
+		tileColor = c;
 	}
 
-	public void Tint(Color c)
+	public void TemporaryTint(Color c, float time)
 	{
-		StartCoroutine(FadeColor(c));
-	}
-
-	private IEnumerator FadeColor(Color c)
-	{
-		Color tileColor = spriteRenderer.color;
 		spriteRenderer.color = c;
+		StartCoroutine(RestoreColor(time));
+	}
 
-		yield return new WaitForSeconds(0.05f);
+	private IEnumerator RestoreColor(float time)
+	{
+		yield return new WaitForSeconds(time);
 
 		spriteRenderer.color = tileColor;
 	}

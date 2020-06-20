@@ -11,15 +11,21 @@ public class Board : MonoBehaviour
 	[SerializeField]
 	private Tile tilePrefab = null;
 
-	private InputHandler inputHandler;
+	[SerializeField]
+	private int minTilesToMatch = 2;
 
-	private Tile[,] tiles;
+	private InputHandler inputHandler;
 
 	private int[,] grid;
 	public int[,] Grid
 	{
 		get { return grid; }
 	}
+
+	private Tile[,] tiles;
+	private int[,] checkedTiles;
+	private List<GridPosition> matches = new List<GridPosition>();
+
 
 	private void Awake()
 	{
@@ -37,6 +43,7 @@ public class Board : MonoBehaviour
 	{
 		grid = new int[rows, columns];
 		tiles = new Tile[rows, columns];
+		checkedTiles = new int[rows, columns];
 
 		Transform myTransform = transform;
 
@@ -50,13 +57,10 @@ public class Board : MonoBehaviour
 		}
 	}
 
-	private void ProcessTap(int row, int column)
+	private void ProcessTap(GridPosition pos)
 	{
-		if (row < level.rows && column < level.columns)
-		{
-			Debug.Log(row + ", " + column);
-			tiles[row, column].Tint(Color.cyan);
-		}
+		if (pos.row < level.rows && pos.col < level.columns)
+			DetectMatches(pos.row, pos.col);
 	}
 
 	private void CreateTile(int row, int column, Transform parentTransform)
@@ -71,5 +75,55 @@ public class Board : MonoBehaviour
 	private int GetRandomTileIndex()
 	{
 		return Random.Range(0, level.numberOfColors);
+	}
+
+	private void DetectMatches(int row, int column)
+	{
+		System.Array.Clear(checkedTiles, 0, checkedTiles.Length);
+		matches.Clear();
+
+		int tileType = grid[row, column];
+		CheckMatchFrom(row, column, tileType);
+
+		if (matches.Count >= minTilesToMatch)
+			ClearMatches();
+	}
+
+	private void CheckMatchFrom(int row, int column, int tileType)
+	{
+		// already checked
+		if (checkedTiles[row, column] == 1)
+			return;
+
+		// not the color I'm looking for
+		if (grid[row, column] != tileType)
+			return;
+
+		checkedTiles[row, column] = 1;
+		matches.Add(new GridPosition(row, column));
+		
+		// Check left neighbour
+		if (column - 1 >= 0)
+			CheckMatchFrom(row, column - 1, tileType);
+
+		// Check right neighbour
+		if (column + 1 < level.columns)
+			CheckMatchFrom(row, column + 1, tileType);
+		
+		// Check top neighbour
+		if (row - 1 >= 0)
+			CheckMatchFrom(row - 1, column, tileType);
+
+		// Check bottom neighbour
+		if (row + 1 < level.rows)
+			CheckMatchFrom(row + 1, column, tileType);
+	}
+
+	private void ClearMatches()
+	{
+		for (int i = matches.Count - 1; i >=0; i--)
+		{
+			tiles[matches[i].row, matches[i].col].TemporaryTint(Color.gray, 0.1f);
+		}
 	}
 }
