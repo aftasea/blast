@@ -22,6 +22,11 @@ public class Board : MonoBehaviour
 		get { return grid; }
 	}
 
+	public LevelDefinition Level
+	{
+		get { return level; }
+	}
+
 	private const int emptyCell = -1;
 
 	private Tile[,] tiles;
