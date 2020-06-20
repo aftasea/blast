@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-	private int[,] grid;
+	[SerializeField]
+	private LevelDefinition level;
 
+	private int[,] grid;
 	public int[,] Grid
 	{
 		get { return grid; }
@@ -13,7 +15,7 @@ public class Board : MonoBehaviour
 
 	private void Awake()
 	{
-		Initialise(5, 8);
+		Initialise(level.rows, level.columns);
 	}
 
 	public void Initialise(int rows, int columns)
