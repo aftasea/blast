@@ -128,5 +128,42 @@ public class Board : MonoBehaviour
 			tiles[matches[i].row, matches[i].col].Clear();
 			grid[matches[i].row, matches[i].col] = emptyCell;
 		}
+
+		StartCoroutine( CheckTilesToFall() );
+	}
+
+	private IEnumerator CheckTilesToFall()
+	{
+		for (int r = level.rows - 1; r >= 0; r--)
+		{
+			for (int c = level.columns - 1; c >= 0; c--)
+			{
+				if (grid[r, c] == emptyCell)
+				{
+					tiles[r, c].MarkAsEmpty();
+
+					yield return new WaitForSeconds(0.2f);
+
+					StartCoroutine(DropTileAbove(r, c) );
+				}
+			}
+		}
+	}
+
+	private IEnumerator DropTileAbove(int r, int c)
+	{
+		// get first non empty tile above this one
+		for (int rAbove = r - 1; rAbove >= 0; rAbove--)
+		{
+			if (grid[rAbove, c] != emptyCell)
+			{
+				grid[r, c] = grid[rAbove, c];
+				grid[rAbove, c] = emptyCell;
+				tiles[r, c].SetColor(tileColors.colors[grid[r, c]]);
+				tiles[rAbove, c].MarkAsEmpty();
+				yield return new WaitForSeconds(0.2f);
+				yield break;
+			}
+		}
 	}
 }

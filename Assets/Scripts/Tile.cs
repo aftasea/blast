@@ -47,4 +47,10 @@ public class Tile : MonoBehaviour
 	{
 		spriteRenderer.enabled = false;
 	}
+
+	public void MarkAsEmpty()
+	{
+		SetColor(new Color(0, 1, 1, 0.15f));
+		spriteRenderer.enabled = true;
+	}
 }
