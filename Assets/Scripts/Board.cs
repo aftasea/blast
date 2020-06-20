@@ -11,6 +11,8 @@ public class Board : MonoBehaviour
 	[SerializeField]
 	private Tile tilePrefab = null;
 
+	private InputHandler inputHandler;
+
 	private Tile[,] tiles;
 
 	private int[,] grid;
@@ -22,6 +24,13 @@ public class Board : MonoBehaviour
 	private void Awake()
 	{
 		Initialise(level.rows, level.columns);
+		inputHandler = GetComponent<InputHandler>();
+		inputHandler.OnTap += ProcessTap;
+	}
+
+	private void OnDestroy()
+	{
+		inputHandler.OnTap -= ProcessTap;
 	}
 
 	private void Initialise(int rows, int columns)
@@ -39,6 +48,11 @@ public class Board : MonoBehaviour
 				CreateTile(r, c, myTransform);
 			}
 		}
+	}
+
+	private void ProcessTap(int row, int column)
+	{
+		Debug.Log(row + ", " + column);
 	}
 
 	private void CreateTile(int row, int column, Transform parentTransform)
