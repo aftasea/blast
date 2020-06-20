@@ -45,6 +45,7 @@ public class Board : MonoBehaviour
 	{
 		Vector3 pos = new Vector3(column, -row, 0);
 		Tile t = Instantiate(tilePrefab, pos, Quaternion.identity, parentTransform);
+		t.UpdateName(row, column);
 		t.SetColor(tileColors.colors[grid[row, column]]);
 		tiles[row, column] = t;
 	}
