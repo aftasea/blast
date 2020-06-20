@@ -134,17 +134,17 @@ public class Board : MonoBehaviour
 
 	private IEnumerator CheckTilesToFall()
 	{
-		for (int r = level.rows - 1; r >= 0; r--)
+		for (int c = level.columns - 1; c >= 0; c--)
 		{
-			for (int c = level.columns - 1; c >= 0; c--)
+			for (int r = level.rows - 1; r >= 0; r--)
 			{
 				if (grid[r, c] == emptyCell)
 				{
 					tiles[r, c].MarkAsEmpty();
 
-					yield return new WaitForSeconds(0.2f);
+					yield return new WaitForSeconds(0.1f);
 
-					StartCoroutine(DropTileAbove(r, c) );
+					yield return DropTileAbove(r, c);
 				}
 			}
 		}
@@ -153,7 +153,7 @@ public class Board : MonoBehaviour
 	private IEnumerator DropTileAbove(int r, int c)
 	{
 		// get first non empty tile above this one
-		for (int rAbove = r - 1; rAbove >= 0; rAbove--)
+		for (int rAbove = r; rAbove >= 0; rAbove--)
 		{
 			if (grid[rAbove, c] != emptyCell)
 			{
@@ -165,5 +165,6 @@ public class Board : MonoBehaviour
 				yield break;
 			}
 		}
+
 	}
 }
