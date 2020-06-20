@@ -52,7 +52,8 @@ public class Board : MonoBehaviour
 
 	private void ProcessTap(int row, int column)
 	{
-		Debug.Log(row + ", " + column);
+		if (row < level.rows && column < level.columns)
+			Debug.Log(row + ", " + column);
 	}
 
 	private void CreateTile(int row, int column, Transform parentTransform)
