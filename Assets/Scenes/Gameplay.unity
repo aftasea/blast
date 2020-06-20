@@ -231,6 +231,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -246,6 +247,19 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 441de4f70af5a4e3b83cf0a1cc9b8156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  verticalOffset: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -511,6 +525,7 @@ MonoBehaviour:
   tileColors: {fileID: 11400000, guid: 262941e25b3ea4961aa71458393b80de, type: 2}
   tilePrefab: {fileID: 268106090428376424, guid: 3624bb62741a24aa2ad54125d42a3b77,
     type: 3}
+  minTilesToMatch: 2
 --- !u!114 &1688693106
 MonoBehaviour:
   m_ObjectHideFlags: 0
