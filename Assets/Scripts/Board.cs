@@ -5,11 +5,11 @@ using UnityEngine;
 public class Board : MonoBehaviour
 {
 	[SerializeField]
-	private LevelDefinition level;
+	private LevelDefinition level = null;
 	[SerializeField]
-	private TileColors tileColors;
+	private TileColors tileColors = null;
 	[SerializeField]
-	private Tile tilePrefab;
+	private Tile tilePrefab = null;
 
 	private Tile[,] tiles;
 
