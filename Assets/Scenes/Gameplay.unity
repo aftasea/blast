@@ -506,3 +506,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: {fileID: 11400000, guid: fb621e6fae9ad4d9a9429f8bd1e52453, type: 2}
+  tileColors: {fileID: 11400000, guid: 262941e25b3ea4961aa71458393b80de, type: 2}
+  tilePrefab: {fileID: 268106090428376424, guid: 3624bb62741a24aa2ad54125d42a3b77,
+    type: 3}

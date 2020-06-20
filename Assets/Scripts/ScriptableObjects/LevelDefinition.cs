@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/LevelDefinition", order = 1)]
+[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/LevelDefinition")]
 public class LevelDefinition : ScriptableObject
 {
 	[Range(5, 20)]
@@ -10,4 +10,7 @@ public class LevelDefinition : ScriptableObject
 
 	[Range(5, 20)]
 	public int columns = 5;
+
+	[Range(3, 6)]
+	public int numberOfColors = 3;
 }
