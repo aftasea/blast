@@ -147,12 +147,12 @@ public class Board : MonoBehaviour
 				{
 					tiles[r, c].MarkAsEmpty();
 
-					yield return new WaitForSeconds(0.1f);
-
 					yield return DropTileAbove(r, c);
 				}
 			}
 		}
+
+		yield return FillEmptyCells();
 	}
 
 	private IEnumerator DropTileAbove(int r, int c)
@@ -170,6 +170,23 @@ public class Board : MonoBehaviour
 				yield break;
 			}
 		}
+	}
 
+	private IEnumerator FillEmptyCells()
+	{
+		for (int c = level.columns - 1; c >= 0; c--)
+		{
+			for (int r = level.rows - 1; r >= 0; r--)
+			{
+				if (grid[r, c] == emptyCell)
+				{
+					int newTileIndex = GetRandomTileIndex();
+					grid[r, c] = newTileIndex;
+					tiles[r, c].SetColor(tileColors.colors[newTileIndex]);
+
+					yield return new WaitForSeconds(0.2f);
+				}
+			}
+		}
 	}
 }
