@@ -53,7 +53,10 @@ public class Board : MonoBehaviour
 	private void ProcessTap(int row, int column)
 	{
 		if (row < level.rows && column < level.columns)
+		{
 			Debug.Log(row + ", " + column);
+			tiles[row, column].Tint(Color.cyan);
+		}
 	}
 
 	private void CreateTile(int row, int column, Transform parentTransform)

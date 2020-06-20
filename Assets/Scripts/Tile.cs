@@ -26,4 +26,19 @@ public class Tile : MonoBehaviour
 	{
 		spriteRenderer.color = c;
 	}
+
+	public void Tint(Color c)
+	{
+		StartCoroutine(FadeColor(c));
+	}
+
+	private IEnumerator FadeColor(Color c)
+	{
+		Color tileColor = spriteRenderer.color;
+		spriteRenderer.color = c;
+
+		yield return new WaitForSeconds(0.05f);
+
+		spriteRenderer.color = tileColor;
+	}
 }
