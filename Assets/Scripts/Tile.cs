@@ -42,4 +42,9 @@ public class Tile : MonoBehaviour
 
 		spriteRenderer.color = tileColor;
 	}
+
+	public void Clear()
+	{
+		spriteRenderer.enabled = false;
+	}
 }

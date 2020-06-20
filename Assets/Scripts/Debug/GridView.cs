@@ -36,16 +36,27 @@ public class GridView : MonoBehaviour
 		{
 			for (int c = 0; c < columns; c++)
 			{
-				int type = grid[r, c];
-				sb.Append("<color=#");
-				sb.Append(ColorUtility.ToHtmlStringRGB(tileColors.colors[type]));
-				sb.Append(">");
-				sb.Append(type);
-				sb.Append("</color> ");
+				AppendColorIndex(grid[r, c]);					
 			}
 			sb.AppendLine();
 		}
 
 		output.text = sb.ToString();
+	}
+
+	private void AppendColorIndex(int type)
+	{
+		if (type >= 0)
+		{
+			sb.Append("<color=#");
+			sb.Append(ColorUtility.ToHtmlStringRGB(tileColors.colors[type]));
+			sb.Append(">");
+			sb.Append(type);
+			sb.Append("</color> ");
+		}
+		else
+		{
+			sb.Append("_ ");
+		}
 	}
 }

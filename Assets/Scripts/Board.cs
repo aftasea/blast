@@ -22,6 +22,8 @@ public class Board : MonoBehaviour
 		get { return grid; }
 	}
 
+	private const int emptyCell = -1;
+
 	private Tile[,] tiles;
 	private int[,] checkedTiles;
 	private List<GridPosition> matches = new List<GridPosition>();
@@ -123,7 +125,8 @@ public class Board : MonoBehaviour
 	{
 		for (int i = matches.Count - 1; i >=0; i--)
 		{
-			tiles[matches[i].row, matches[i].col].TemporaryTint(Color.gray, 0.1f);
+			tiles[matches[i].row, matches[i].col].Clear();
+			grid[matches[i].row, matches[i].col] = emptyCell;
 		}
 	}
 }
