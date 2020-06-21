@@ -8,12 +8,16 @@ public class Tile : MonoBehaviour
 	[SerializeField]
 	[Tooltip("Units per second")]
 	private float fallSpeed = 4f;
+	[SerializeField]
+	[Tooltip("In seconds")]
+	private float clearAnimationTime = 0.2f;
 
 	private SpriteRenderer spriteRenderer;
 
 	private GridPosition gridPos;
 	private Color tileColor;
 
+	private System.Action OnClearedCallback;
 	private System.Action OnLandedCallback;
 	private Transform myTransform;
 	private bool isFalling;
@@ -75,7 +79,13 @@ public class Tile : MonoBehaviour
 		tileColor = c;
 	}
 
-	public void TemporaryTint(Color c, float time)
+	public void Clear(System.Action onClearedCallback)
+	{
+		OnClearedCallback = onClearedCallback;
+		TemporaryTint(Color.cyan, clearAnimationTime);
+	}
+
+	private void TemporaryTint(Color c, float time)
 	{
 		spriteRenderer.color = c;
 		StartCoroutine(RestoreColor(time));
@@ -86,11 +96,9 @@ public class Tile : MonoBehaviour
 		yield return new WaitForSeconds(time);
 
 		spriteRenderer.color = tileColor;
-	}
 
-	public void Clear()
-	{
-		MarkAsEmpty();
+		OnClearedCallback?.Invoke();
+		OnClearedCallback = null;
 	}
 
 	public void MarkAsEmpty()

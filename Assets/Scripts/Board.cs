@@ -35,6 +35,7 @@ public class Board : MonoBehaviour
 	private List<GridPosition> matches = new List<GridPosition>();
 	private int newTileCount;
 	private int tileFallingCount;
+	private int tileClearedCount;
 
 
 	private void Awake()
@@ -152,10 +153,15 @@ public class Board : MonoBehaviour
 		for (int i = matches.Count - 1; i >=0; i--)
 		{
 			grid[matches[i].row, matches[i].col] = emptyCell;
-			tiles[matches[i].row, matches[i].col].Clear();
+			tiles[matches[i].row, matches[i].col].Clear(OnTileCleared);
 		}
+	}
 
-		HandleEmptyTiles();
+	private void OnTileCleared()
+	{
+		++tileClearedCount;
+		if (tileClearedCount >= matches.Count)
+			HandleEmptyTiles();
 	}
 
 	private void HandleEmptyTiles()
