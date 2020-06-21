@@ -74,8 +74,9 @@ public class Board : MonoBehaviour
 	{
 		Vector3 pos = new Vector3(column, -row, 0);
 		Tile t = Instantiate(tilePrefab, pos, Quaternion.identity, parentTransform);
-		t.UpdateName(row, column);
-		t.SetColor(tileColors.colors[grid[row, column]]);
+		GridPosition gridPosition = new GridPosition(row, column);
+		t.UpdatePosition(gridPosition);
+		t.SetColor(GetColor(gridPosition));
 		tiles[row, column] = t;
 	}
 
@@ -94,6 +95,14 @@ public class Board : MonoBehaviour
 
 		if (matches.Count >= minTilesToMatch)
 			ClearMatches();
+	}
+
+	private Color GetColor(GridPosition pos)
+	{
+		int index = grid[pos.row, pos.col];
+		if (index == emptyCell)
+			return new Color(0, 0.4f, 1, 0.25f);
+		return tileColors.colors[index];
 	}
 
 	private void CheckMatchFrom(int row, int column, int tileType)
@@ -134,10 +143,10 @@ public class Board : MonoBehaviour
 			grid[matches[i].row, matches[i].col] = emptyCell;
 		}
 
-		StartCoroutine( CheckTilesToFall() );
+		CheckTilesToFall();
 	}
 
-	private IEnumerator CheckTilesToFall()
+	private void CheckTilesToFall()
 	{
 		for (int c = level.columns - 1; c >= 0; c--)
 		{
@@ -145,17 +154,15 @@ public class Board : MonoBehaviour
 			{
 				if (grid[r, c] == emptyCell)
 				{
-					tiles[r, c].MarkAsEmpty();
-
-					yield return DropTileAbove(r, c);
+					DropTileAbove(r, c);
 				}
 			}
 		}
 
-		yield return FillEmptyCells();
+		//yield return FillEmptyCells();
 	}
 
-	private IEnumerator DropTileAbove(int r, int c)
+	private void DropTileAbove(int r, int c)
 	{
 		// get first non empty tile above this one
 		for (int rAbove = r; rAbove >= 0; rAbove--)
@@ -164,12 +171,20 @@ public class Board : MonoBehaviour
 			{
 				grid[r, c] = grid[rAbove, c];
 				grid[rAbove, c] = emptyCell;
-				tiles[r, c].SetColor(tileColors.colors[grid[r, c]]);
-				tiles[rAbove, c].MarkAsEmpty();
-				yield return new WaitForSeconds(0.2f);
-				yield break;
+				tiles[rAbove, c].StartFall(new GridPosition(r, c), UpdateLanded);
+				return;
 			}
 		}
+	}
+
+	private void UpdateLanded(GridPosition origin, GridPosition destination)
+	{
+		if (!tiles[origin.row, origin.col].Landed)
+			tiles[origin.row, origin.col].Clear();
+
+		Color c = GetColor(destination);
+		tiles[destination.row, destination.col].SetColor(c);
+		tiles[destination.row, destination.col].MarkAsLanded();
 	}
 
 	private IEnumerator FillEmptyCells()
@@ -180,9 +195,8 @@ public class Board : MonoBehaviour
 			{
 				if (grid[r, c] == emptyCell)
 				{
-					int newTileIndex = GetRandomTileIndex();
-					grid[r, c] = newTileIndex;
-					tiles[r, c].SetColor(tileColors.colors[newTileIndex]);
+					grid[r, c] = GetRandomTileIndex();					
+					tiles[r, c].SetColor(GetColor(new GridPosition(r, c)));
 
 					yield return new WaitForSeconds(0.2f);
 				}

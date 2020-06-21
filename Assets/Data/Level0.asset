@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e75a055e09c24e79ba6949befc8270b, type: 3}
   m_Name: Level0
   m_EditorClassIdentifier: 
-  rows: 5
+  rows: 20
   columns: 5
   numberOfColors: 3

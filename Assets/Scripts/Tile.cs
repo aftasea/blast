@@ -5,23 +5,74 @@ using System.Text;
 
 public class Tile : MonoBehaviour
 {
+	[SerializeField]
+	[Tooltip("Units per second")]
+	private float fallSpeed = 4f;
+
 	private SpriteRenderer spriteRenderer;
 
-	private Color tileColor; 
+	private GridPosition gridPos;
+	private Color tileColor;
+
+	private System.Action<GridPosition /*origin*/, GridPosition /*destination*/> OnLandedCallback;
+	private Transform myTransform;
+	private bool isFalling;
+	public bool Landed { get; private set; } = true;
+
+	private GridPosition destination;
 
 	private void Awake()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
+		myTransform = transform;
 	}
 
-	public void UpdateName(int row, int column)
+	private void Update()
+	{
+		if (isFalling)
+		{
+			UpdateFall();
+		}
+	}
+
+	private void UpdateFall()
+	{
+		Vector3 pos = myTransform.position;
+		float posToRow = -pos.y;
+		if (posToRow < destination.row)
+		{
+			pos.y -= fallSpeed * Time.deltaTime;
+		}
+		else // stop falling
+		{
+			OnLandedCallback?.Invoke(gridPos, destination);
+			OnLandedCallback = null;
+			isFalling = false;
+			pos.y = -gridPos.row;
+		}
+		
+		myTransform.position = pos;
+	}
+
+	public void UpdatePosition(GridPosition pos)
+	{
+		gridPos = pos;
+		UpdateName(pos);
+	}
+
+	public void UpdateName(GridPosition pos)
 	{
 		StringBuilder sb = new StringBuilder("Tile_");
-		sb.Append(row);
+		sb.Append(pos.row);
 		sb.Append('_');
-		sb.Append(column);
+		sb.Append(pos.col);
 
 		name = sb.ToString();
+	}
+
+	public void MarkAsLanded()
+	{
+		Landed = true;
 	}
 
 	public void SetColor(Color c)
@@ -45,12 +96,22 @@ public class Tile : MonoBehaviour
 
 	public void Clear()
 	{
-		spriteRenderer.enabled = false;
+		MarkAsEmpty();
 	}
 
 	public void MarkAsEmpty()
 	{
 		SetColor(new Color(0, 1, 1, 0.15f));
-		spriteRenderer.enabled = true;
+	}
+
+	public void StartFall(GridPosition destination, System.Action<GridPosition, GridPosition> onLandedCallback)
+	{
+		this.destination = destination;
+		isFalling = true;
+		Landed = false;
+
+		if (OnLandedCallback != null)
+			Debug.LogWarning("OnLandedCallback already assigned");
+		OnLandedCallback = onLandedCallback;
 	}
 }
