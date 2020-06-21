@@ -17,7 +17,8 @@ public class Tile : MonoBehaviour
 	private System.Action<GridPosition /*origin*/, GridPosition /*destination*/> OnLandedCallback;
 	private Transform myTransform;
 	private bool isFalling;
-	public bool Landed { get; private set; } = true;
+	public bool Landed { get { return !isFalling; } }
+	public bool Placed { get; private set; } = true;
 
 	private GridPosition destination;
 
@@ -70,9 +71,21 @@ public class Tile : MonoBehaviour
 		name = sb.ToString();
 	}
 
-	public void MarkAsLanded()
+	public void MarkAsPlaced()
 	{
-		Landed = true;
+		Placed = true;
+	}
+
+	public void Land()
+	{
+		Vector3 pos = myTransform.position;
+		pos.y = -gridPos.row;
+		myTransform.position = pos;
+
+		Placed = true;
+
+		OnLandedCallback = null;
+		isFalling = false;
 	}
 
 	public void SetColor(Color c)
@@ -104,11 +117,11 @@ public class Tile : MonoBehaviour
 		SetColor(new Color(0, 1, 1, 0.15f));
 	}
 
-	public void StartFall(GridPosition destination, System.Action<GridPosition, GridPosition> onLandedCallback)
+	private void StartFall(GridPosition destination, System.Action<GridPosition, GridPosition> onLandedCallback)
 	{
 		this.destination = destination;
 		isFalling = true;
-		Landed = false;
+		Placed = false;
 
 		if (OnLandedCallback != null)
 			Debug.LogWarning("OnLandedCallback already assigned");
@@ -121,9 +134,17 @@ public class Tile : MonoBehaviour
 		System.Action<GridPosition, GridPosition> onLandedCallback)
 	{
 		Vector3 pos = myTransform.position;
-		pos.y = origin.row;
+		pos.y = -origin.row;
 		myTransform.position = pos;
 
 		StartFall(destination, onLandedCallback);
+	}
+
+	public void TransferAnimationTo(Tile t)
+	{
+		t.myTransform.position = myTransform.position;
+		t.destination = destination;
+		t.isFalling = true;
+		t.OnLandedCallback = OnLandedCallback;
 	}
 }

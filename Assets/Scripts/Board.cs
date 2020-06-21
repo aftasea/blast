@@ -198,19 +198,22 @@ public class Board : MonoBehaviour
 
 	private void DropTile(int r, int c, int rAbove)
 	{
+		tiles[r, c].SetColor(GetColor(new GridPosition(rAbove, c)));
+		tiles[rAbove, c].MarkAsEmpty();
+
 		grid[r, c] = grid[rAbove, c];
 		grid[rAbove, c] = emptyCell;
-		tiles[rAbove, c].StartFall(new GridPosition(r, c), UpdateLanded);
+		
+		tiles[r, c].StartFallingFrom(
+			new GridPosition(rAbove, c),
+			new GridPosition(r, c),
+			UpdateLanded
+		);
 	}
 
 	private void UpdateLanded(GridPosition origin, GridPosition destination)
 	{
-		if (!tiles[origin.row, origin.col].Landed)
-			tiles[origin.row, origin.col].Clear();
-
-		Color c = GetColor(destination);
-		tiles[destination.row, destination.col].SetColor(c);
-		tiles[destination.row, destination.col].MarkAsLanded();
+		//TODO: handle block user input until all animations end
 	}
 
 	private void DropNewTiles()
@@ -227,9 +230,9 @@ public class Board : MonoBehaviour
 		int destRow = newTileOrigins.Count - (tileOrder + 1);
 
 		grid[destRow, c] = GetRandomTileIndex();
-		tiles[r, c].SetColor(GetColor(new GridPosition(destRow, c)));
-		tiles[r, c].StartFallingFrom(
-			new GridPosition(tileOrder + 1, c),
+		tiles[destRow, c].SetColor(GetColor(new GridPosition(destRow, c)));
+		tiles[destRow, c].StartFallingFrom(
+			new GridPosition(-(tileOrder + 1), c),
 			new GridPosition(destRow, c),
 			UpdateLanded
 		);
