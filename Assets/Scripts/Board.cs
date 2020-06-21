@@ -34,6 +34,7 @@ public class Board : MonoBehaviour
 	private int[,] checkedTiles;
 	private List<GridPosition> matches = new List<GridPosition>();
 	private int newTileCount;
+	private int tileFallingCount;
 
 
 	private void Awake()
@@ -68,8 +69,11 @@ public class Board : MonoBehaviour
 
 	private void ProcessTap(GridPosition pos)
 	{
-		if (pos.row < level.rows && pos.col < level.columns)
-			DetectMatches(pos.row, pos.col);
+		if (Game.CurrentState == Game.State.WaitingForInput)
+		{
+			if (pos.row < level.rows && pos.col < level.columns)
+				DetectMatches(pos.row, pos.col);
+		}
 	}
 
 	private void CreateTile(int row, int column, Transform parentTransform)
@@ -89,6 +93,8 @@ public class Board : MonoBehaviour
 
 	private void DetectMatches(int row, int column)
 	{
+		Game.CurrentState = Game.State.ProcessingInput;
+
 		System.Array.Clear(checkedTiles, 0, checkedTiles.Length);
 		matches.Clear();
 
@@ -97,6 +103,8 @@ public class Board : MonoBehaviour
 
 		if (matches.Count >= minTilesToMatch)
 			ClearMatches();
+		else
+			Game.CurrentState = Game.State.WaitingForInput;
 	}
 
 	private Color GetColor(GridPosition pos)
@@ -139,6 +147,8 @@ public class Board : MonoBehaviour
 
 	private void ClearMatches()
 	{
+		Game.CurrentState = Game.State.ClearingMatches;
+
 		for (int i = matches.Count - 1; i >=0; i--)
 		{
 			grid[matches[i].row, matches[i].col] = emptyCell;
@@ -150,6 +160,8 @@ public class Board : MonoBehaviour
 
 	private void HandleEmptyTiles()
 	{
+		Game.CurrentState = Game.State.TilesFalling;
+
 		for (int c = level.columns - 1; c >= 0; c--)
 		{
 			CollectEmptyTilesInColumn(c);
@@ -205,11 +217,15 @@ public class Board : MonoBehaviour
 		grid[rAbove, c] = emptyCell;
 		
 		tiles[r, c].StartFallingFrom(rAbove, r, UpdateLanded);
+
+		tileFallingCount++;
 	}
 
 	private void UpdateLanded()
 	{
-		//TODO: handle block user input until all animations end
+		--tileFallingCount;
+		if (tileFallingCount <= 0)
+			Game.CurrentState = Game.State.WaitingForInput;
 	}
 
 	private void DropNewTilesInColumn(int c)
@@ -232,5 +248,7 @@ public class Board : MonoBehaviour
 			destinationRow,
 			UpdateLanded
 		);
+
+		tileFallingCount++;
 	}
 }
