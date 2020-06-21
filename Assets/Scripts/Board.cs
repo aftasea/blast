@@ -28,10 +28,12 @@ public class Board : MonoBehaviour
 	}
 
 	private const int emptyCell = -1;
+	private const int notFound = -1;
 
 	private Tile[,] tiles;
 	private int[,] checkedTiles;
 	private List<GridPosition> matches = new List<GridPosition>();
+	private List<GridPosition> newTileOrigins = new List<GridPosition>();
 
 
 	private void Awake()
@@ -139,42 +141,66 @@ public class Board : MonoBehaviour
 	{
 		for (int i = matches.Count - 1; i >=0; i--)
 		{
-			tiles[matches[i].row, matches[i].col].Clear();
 			grid[matches[i].row, matches[i].col] = emptyCell;
+			tiles[matches[i].row, matches[i].col].Clear();
 		}
 
-		CheckTilesToFall();
+		HandleEmptyTiles();
 	}
 
-	private void CheckTilesToFall()
+	private void HandleEmptyTiles()
 	{
 		for (int c = level.columns - 1; c >= 0; c--)
 		{
+			CollectEmptyTilesInColumn(c);
+
+			// drop tiles
 			for (int r = level.rows - 1; r >= 0; r--)
 			{
 				if (grid[r, c] == emptyCell)
 				{
-					DropTileAbove(r, c);
+					int rowAbove = RowOfTileAbove(r, c);
+					if (rowAbove != notFound)
+					{
+						DropTile(r, c, rowAbove);
+					}
 				}
 			}
-		}
 
-		//yield return FillEmptyCells();
+			DropNewTiles();
+		}
 	}
 
-	private void DropTileAbove(int r, int c)
+	private void CollectEmptyTilesInColumn(int c)
 	{
-		// get first non empty tile above this one
+		newTileOrigins.Clear();
+
+		for (int r = level.rows - 1; r >= 0; r--)
+		{
+			if (grid[r, c] == emptyCell)
+			{
+				newTileOrigins.Add(new GridPosition(r, c));
+			}
+		}
+	}
+
+	private int RowOfTileAbove(int r, int c)
+	{
+		// find first non empty tile above this one
 		for (int rAbove = r; rAbove >= 0; rAbove--)
 		{
 			if (grid[rAbove, c] != emptyCell)
-			{
-				grid[r, c] = grid[rAbove, c];
-				grid[rAbove, c] = emptyCell;
-				tiles[rAbove, c].StartFall(new GridPosition(r, c), UpdateLanded);
-				return;
-			}
+				return rAbove;
 		}
+
+		return notFound;
+	}
+
+	private void DropTile(int r, int c, int rAbove)
+	{
+		grid[r, c] = grid[rAbove, c];
+		grid[rAbove, c] = emptyCell;
+		tiles[rAbove, c].StartFall(new GridPosition(r, c), UpdateLanded);
 	}
 
 	private void UpdateLanded(GridPosition origin, GridPosition destination)
@@ -187,20 +213,25 @@ public class Board : MonoBehaviour
 		tiles[destination.row, destination.col].MarkAsLanded();
 	}
 
-	private IEnumerator FillEmptyCells()
+	private void DropNewTiles()
 	{
-		for (int c = level.columns - 1; c >= 0; c--)
+		for (int i = newTileOrigins.Count - 1; i >= 0; i--)
 		{
-			for (int r = level.rows - 1; r >= 0; r--)
-			{
-				if (grid[r, c] == emptyCell)
-				{
-					grid[r, c] = GetRandomTileIndex();					
-					tiles[r, c].SetColor(GetColor(new GridPosition(r, c)));
-
-					yield return new WaitForSeconds(0.2f);
-				}
-			}
+			GridPosition pos = newTileOrigins[i];
+			DropNewTile(pos.row, pos.col, i);
 		}
+	}
+
+	private void DropNewTile(int r, int c, int tileOrder)
+	{
+		int destRow = newTileOrigins.Count - (tileOrder + 1);
+
+		grid[destRow, c] = GetRandomTileIndex();
+		tiles[r, c].SetColor(GetColor(new GridPosition(destRow, c)));
+		tiles[r, c].StartFallingFrom(
+			new GridPosition(tileOrder + 1, c),
+			new GridPosition(destRow, c),
+			UpdateLanded
+		);
 	}
 }

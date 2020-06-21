@@ -114,4 +114,16 @@ public class Tile : MonoBehaviour
 			Debug.LogWarning("OnLandedCallback already assigned");
 		OnLandedCallback = onLandedCallback;
 	}
+
+	public void StartFallingFrom(
+		GridPosition origin,
+		GridPosition destination,
+		System.Action<GridPosition, GridPosition> onLandedCallback)
+	{
+		Vector3 pos = myTransform.position;
+		pos.y = origin.row;
+		myTransform.position = pos;
+
+		StartFall(destination, onLandedCallback);
+	}
 }
