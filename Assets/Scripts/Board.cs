@@ -12,13 +12,6 @@ public class Board : MonoBehaviour
 	[SerializeField]
 	private int minTilesToMatch = 2;
 
-	private InputHandler inputHandler;
-
-	private int[,] grid;
-	public int[,] Grid
-	{
-		get { return grid; }
-	}
 
 	public LevelDefinition Level
 	{
@@ -27,7 +20,10 @@ public class Board : MonoBehaviour
 
 	private const int emptyCell = -1;
 	private const int notFound = -1;
+	
+	private InputHandler inputHandler;
 
+	private int[,] grid;
 	private Tile[,] tiles;
 	private int[,] checkedTiles;
 	private List<GridPosition> matches = new List<GridPosition>();
