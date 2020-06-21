@@ -153,20 +153,7 @@ public class Board : MonoBehaviour
 		for (int c = level.columns - 1; c >= 0; c--)
 		{
 			CollectEmptyTilesInColumn(c);
-
-			// drop tiles
-			for (int r = level.rows - 1; r >= 0; r--)
-			{
-				if (grid[r, c] == emptyCell)
-				{
-					int rowAbove = RowOfTileAbove(r, c);
-					if (rowAbove != notFound)
-					{
-						DropTile(r, c, rowAbove);
-					}
-				}
-			}
-
+			DropExistingTilesInColumn(c);
 			DropNewTilesInColumn(c);
 		}
 	}
@@ -179,6 +166,21 @@ public class Board : MonoBehaviour
 		{
 			if (grid[r, c] == emptyCell)
 				newTileCount++;
+		}
+	}
+
+	private void DropExistingTilesInColumn(int c)
+	{
+		for (int r = level.rows - 1; r >= 0; r--)
+		{
+			if (grid[r, c] == emptyCell)
+			{
+				int rowAbove = RowOfTileAbove(r, c);
+				if (rowAbove != notFound)
+				{
+					DropTile(r, c, rowAbove);
+				}
+			}
 		}
 	}
 
@@ -224,13 +226,13 @@ public class Board : MonoBehaviour
 
 	private void DropNewTile(int c, int tileIndex)
 	{
-		int destRow = newTileCount - (tileIndex + 1);
+		int destinationRow = newTileCount - (tileIndex + 1);
 
-		grid[destRow, c] = GetRandomTileIndex();
-		tiles[destRow, c].SetColor(GetColor(new GridPosition(destRow, c)));
-		tiles[destRow, c].StartFallingFrom(
+		grid[destinationRow, c] = GetRandomTileIndex();
+		tiles[destinationRow, c].SetColor(GetColor(new GridPosition(destinationRow, c)));
+		tiles[destinationRow, c].StartFallingFrom(
 			new GridPosition(-(tileIndex + 1), c),
-			new GridPosition(destRow, c),
+			new GridPosition(destinationRow, c),
 			UpdateLanded
 		);
 	}

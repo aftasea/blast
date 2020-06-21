@@ -18,7 +18,6 @@ public class Tile : MonoBehaviour
 	private Transform myTransform;
 	private bool isFalling;
 	public bool Landed { get { return !isFalling; } }
-	public bool Placed { get; private set; } = true;
 
 	private GridPosition destination;
 
@@ -71,18 +70,11 @@ public class Tile : MonoBehaviour
 		name = sb.ToString();
 	}
 
-	public void MarkAsPlaced()
-	{
-		Placed = true;
-	}
-
 	public void Land()
 	{
 		Vector3 pos = myTransform.position;
 		pos.y = -gridPos.row;
 		myTransform.position = pos;
-
-		Placed = true;
 
 		OnLandedCallback = null;
 		isFalling = false;
@@ -121,7 +113,6 @@ public class Tile : MonoBehaviour
 	{
 		this.destination = destination;
 		isFalling = true;
-		Placed = false;
 
 		if (OnLandedCallback != null)
 			Debug.LogWarning("OnLandedCallback already assigned");
