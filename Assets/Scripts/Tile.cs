@@ -17,7 +17,7 @@ public class Tile : MonoBehaviour
 	private GridPosition gridPos;
 	private Color tileColor;
 
-	private System.Action OnClearedCallback;
+	private System.Action OnEffectEndCallback;
 	private System.Action OnLandedCallback;
 	private Transform myTransform;
 	private bool isFalling;
@@ -79,9 +79,15 @@ public class Tile : MonoBehaviour
 		tileColor = c;
 	}
 
+	public void ShowInvalidMove(System.Action onEffectEndCallback)
+	{
+		OnEffectEndCallback = onEffectEndCallback;
+		TemporaryTint(Color.gray, clearAnimationTime);
+	}
+
 	public void Clear(System.Action onClearedCallback)
 	{
-		OnClearedCallback = onClearedCallback;
+		OnEffectEndCallback = onClearedCallback;
 		TemporaryTint(Color.cyan, clearAnimationTime);
 	}
 
@@ -97,8 +103,8 @@ public class Tile : MonoBehaviour
 
 		spriteRenderer.color = tileColor;
 
-		OnClearedCallback?.Invoke();
-		OnClearedCallback = null;
+		OnEffectEndCallback?.Invoke();
+		OnEffectEndCallback = null;
 	}
 
 	public void MarkAsEmpty()

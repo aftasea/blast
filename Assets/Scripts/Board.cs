@@ -105,7 +105,12 @@ public class Board : MonoBehaviour
 		if (matches.Count >= minTilesToMatch)
 			ClearMatches();
 		else
-			Game.CurrentState = Game.State.WaitingForInput;
+			tiles[row, column].ShowInvalidMove(WaitForInput);
+	}
+
+	private void WaitForInput()
+	{
+		Game.CurrentState = Game.State.WaitingForInput;
 	}
 
 	private Color GetColor(GridPosition pos)
