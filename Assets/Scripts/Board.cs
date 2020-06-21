@@ -7,8 +7,6 @@ public class Board : MonoBehaviour
 	[SerializeField]
 	private LevelDefinition level = null;
 	[SerializeField]
-	private TileDefinition tileColors = null;
-	[SerializeField]
 	private Tile tilePrefab = null;
 
 	[SerializeField]
@@ -83,7 +81,7 @@ public class Board : MonoBehaviour
 		Tile t = Instantiate(tilePrefab, pos, Quaternion.identity, parentTransform);
 		GridPosition gridPosition = new GridPosition(row, column);
 		t.UpdatePosition(gridPosition);
-		t.SetColor(GetColor(gridPosition));
+		t.UpdateColor(grid[row, column]);
 		tiles[row, column] = t;
 	}
 
@@ -111,14 +109,6 @@ public class Board : MonoBehaviour
 	private void WaitForInput()
 	{
 		Game.CurrentState = Game.State.WaitingForInput;
-	}
-
-	private Color GetColor(GridPosition pos)
-	{
-		int index = grid[pos.row, pos.col];
-		if (index == emptyCell)
-			return new Color(0, 0.4f, 1, 0.25f);
-		return tileColors.colors[index];
 	}
 
 	private void CheckMatchFrom(int row, int column, int tileType)
@@ -221,7 +211,7 @@ public class Board : MonoBehaviour
 
 	private void DropTile(int r, int c, int rAbove)
 	{
-		tiles[r, c].SetColor(GetColor(new GridPosition(rAbove, c)));
+		tiles[r, c].UpdateColor(grid[rAbove, c]);
 
 		grid[r, c] = grid[rAbove, c];
 		grid[rAbove, c] = emptyCell;
@@ -252,7 +242,7 @@ public class Board : MonoBehaviour
 		int originRow = -(tileIndex + 1);
 
 		grid[destinationRow, c] = GetRandomTileIndex();
-		tiles[destinationRow, c].SetColor(GetColor(new GridPosition(destinationRow, c)));
+		tiles[destinationRow, c].UpdateColor(grid[destinationRow, c]);
 		tiles[destinationRow, c].StartFallingFrom(
 			originRow,
 			destinationRow,

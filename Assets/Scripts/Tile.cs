@@ -6,7 +6,7 @@ using System.Text;
 public class Tile : MonoBehaviour
 {
 	[SerializeField]
-	private TileDefinition config;
+	private TileDefinition config = null;
 
 	private SpriteRenderer spriteRenderer;
 
@@ -53,13 +53,21 @@ public class Tile : MonoBehaviour
 		myTransform.position = pos;
 	}
 
+	public void UpdateColor(int colorIndex)
+	{
+		if (colorIndex < 0 || colorIndex >= config.colors.Length)
+			colorIndex = 0;
+
+		SetColor(config.colors[colorIndex]);
+	}
+
 	public void UpdatePosition(GridPosition pos)
 	{
 		gridPos = pos;
 		UpdateName(pos);
 	}
 
-	public void UpdateName(GridPosition pos)
+	private void UpdateName(GridPosition pos)
 	{
 		StringBuilder sb = new StringBuilder("Tile_");
 		sb.Append(pos.row);
