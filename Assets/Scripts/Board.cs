@@ -7,7 +7,7 @@ public class Board : MonoBehaviour
 	[SerializeField]
 	private LevelDefinition level = null;
 	[SerializeField]
-	private TileColors tileColors = null;
+	private TileDefinition tileColors = null;
 	[SerializeField]
 	private Tile tilePrefab = null;
 
@@ -222,7 +222,6 @@ public class Board : MonoBehaviour
 	private void DropTile(int r, int c, int rAbove)
 	{
 		tiles[r, c].SetColor(GetColor(new GridPosition(rAbove, c)));
-		tiles[rAbove, c].MarkAsEmpty();
 
 		grid[r, c] = grid[rAbove, c];
 		grid[rAbove, c] = emptyCell;

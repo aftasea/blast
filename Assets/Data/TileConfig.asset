@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a2c6cd5aa89743fa86cbe393c604e56, type: 3}
-  m_Name: TileColors
+  m_Name: TileConfig
   m_EditorClassIdentifier: 
   colors:
   - {r: 0.85800004, g: 0, b: 0, a: 1}
@@ -19,3 +19,7 @@ MonoBehaviour:
   - {r: 0.943, g: 0.86886114, b: 0.11463921, a: 1}
   - {r: 0.7192853, g: 0.0036172818, b: 0.879, a: 1}
   - {r: 0.9245283, g: 0.5102304, b: 0.039248828, a: 1}
+  clearColor: {r: 0.39275298, g: 0.936, b: 0.8038588, a: 1}
+  invalidMoveColor: {r: 0.504, g: 0.39312002, b: 0.39312002, a: 0}
+  fallingSpeed: 8
+  clearAnimationTime: 0.1

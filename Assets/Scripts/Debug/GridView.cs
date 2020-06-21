@@ -4,7 +4,7 @@ using System.Text;
 
 public class GridView : MonoBehaviour
 {
-	public TileColors tileColors;
+	public TileDefinition tileColors;
 
 	private Text output;
 	private int[,] grid;

@@ -6,11 +6,7 @@ using System.Text;
 public class Tile : MonoBehaviour
 {
 	[SerializeField]
-	[Tooltip("Units per second")]
-	private float fallSpeed = 4f;
-	[SerializeField]
-	[Tooltip("In seconds")]
-	private float clearAnimationTime = 0.2f;
+	private TileDefinition config;
 
 	private SpriteRenderer spriteRenderer;
 
@@ -44,7 +40,7 @@ public class Tile : MonoBehaviour
 		float posToRow = -pos.y;
 		if (posToRow < destinationRow)
 		{
-			pos.y -= fallSpeed * Time.deltaTime;
+			pos.y -= config.fallingSpeed * Time.deltaTime;
 		}
 		else // landed
 		{
@@ -82,13 +78,13 @@ public class Tile : MonoBehaviour
 	public void ShowInvalidMove(System.Action onEffectEndCallback)
 	{
 		OnEffectEndCallback = onEffectEndCallback;
-		TemporaryTint(Color.gray, clearAnimationTime);
+		TemporaryTint(Color.gray, config.invalidMoveAnimationTime);
 	}
 
 	public void Clear(System.Action onClearedCallback)
 	{
 		OnEffectEndCallback = onClearedCallback;
-		TemporaryTint(Color.cyan, clearAnimationTime);
+		TemporaryTint(Color.cyan, config.clearAnimationTime);
 	}
 
 	private void TemporaryTint(Color c, float time)
@@ -105,11 +101,6 @@ public class Tile : MonoBehaviour
 
 		OnEffectEndCallback?.Invoke();
 		OnEffectEndCallback = null;
-	}
-
-	public void MarkAsEmpty()
-	{
-		SetColor(new Color(0, 1, 1, 0.15f));
 	}
 
 	public void StartFallingFrom(int originRow, int destinationRow,	System.Action onLandedCallback)
