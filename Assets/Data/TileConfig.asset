@@ -21,5 +21,6 @@ MonoBehaviour:
   - {r: 0.9245283, g: 0.5102304, b: 0.039248828, a: 1}
   clearColor: {r: 0.39275298, g: 0.936, b: 0.8038588, a: 1}
   invalidMoveColor: {r: 0.504, g: 0.39312002, b: 0.39312002, a: 0}
-  fallingSpeed: 8
+  fallingSpeed: 10
   clearAnimationTime: 0.1
+  invalidMoveAnimationTime: 0.15
