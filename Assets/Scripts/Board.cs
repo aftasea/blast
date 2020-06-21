@@ -204,14 +204,10 @@ public class Board : MonoBehaviour
 		grid[r, c] = grid[rAbove, c];
 		grid[rAbove, c] = emptyCell;
 		
-		tiles[r, c].StartFallingFrom(
-			new GridPosition(rAbove, c),
-			new GridPosition(r, c),
-			UpdateLanded
-		);
+		tiles[r, c].StartFallingFrom(rAbove, r, UpdateLanded);
 	}
 
-	private void UpdateLanded(GridPosition origin, GridPosition destination)
+	private void UpdateLanded()
 	{
 		//TODO: handle block user input until all animations end
 	}
@@ -227,12 +223,13 @@ public class Board : MonoBehaviour
 	private void DropNewTile(int c, int tileIndex)
 	{
 		int destinationRow = newTileCount - (tileIndex + 1);
+		int originRow = -(tileIndex + 1);
 
 		grid[destinationRow, c] = GetRandomTileIndex();
 		tiles[destinationRow, c].SetColor(GetColor(new GridPosition(destinationRow, c)));
 		tiles[destinationRow, c].StartFallingFrom(
-			new GridPosition(-(tileIndex + 1), c),
-			new GridPosition(destinationRow, c),
+			originRow,
+			destinationRow,
 			UpdateLanded
 		);
 	}

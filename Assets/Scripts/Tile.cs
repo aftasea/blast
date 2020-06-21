@@ -14,12 +14,11 @@ public class Tile : MonoBehaviour
 	private GridPosition gridPos;
 	private Color tileColor;
 
-	private System.Action<GridPosition /*origin*/, GridPosition /*destination*/> OnLandedCallback;
+	private System.Action OnLandedCallback;
 	private Transform myTransform;
 	private bool isFalling;
-	public bool Landed { get { return !isFalling; } }
 
-	private GridPosition destination;
+	private int destinationRow;
 
 	private void Awake()
 	{
@@ -39,13 +38,13 @@ public class Tile : MonoBehaviour
 	{
 		Vector3 pos = myTransform.position;
 		float posToRow = -pos.y;
-		if (posToRow < destination.row)
+		if (posToRow < destinationRow)
 		{
 			pos.y -= fallSpeed * Time.deltaTime;
 		}
-		else // stop falling
+		else // landed
 		{
-			OnLandedCallback?.Invoke(gridPos, destination);
+			OnLandedCallback?.Invoke();
 			OnLandedCallback = null;
 			isFalling = false;
 			pos.y = -gridPos.row;
@@ -68,16 +67,6 @@ public class Tile : MonoBehaviour
 		sb.Append(pos.col);
 
 		name = sb.ToString();
-	}
-
-	public void Land()
-	{
-		Vector3 pos = myTransform.position;
-		pos.y = -gridPos.row;
-		myTransform.position = pos;
-
-		OnLandedCallback = null;
-		isFalling = false;
 	}
 
 	public void SetColor(Color c)
@@ -109,33 +98,17 @@ public class Tile : MonoBehaviour
 		SetColor(new Color(0, 1, 1, 0.15f));
 	}
 
-	private void StartFall(GridPosition destination, System.Action<GridPosition, GridPosition> onLandedCallback)
+	public void StartFallingFrom(int originRow, int destinationRow,	System.Action onLandedCallback)
 	{
-		this.destination = destination;
+		Vector3 pos = myTransform.position;
+		pos.y = -originRow;
+		myTransform.position = pos;
+
+		this.destinationRow = destinationRow;
 		isFalling = true;
 
 		if (OnLandedCallback != null)
 			Debug.LogWarning("OnLandedCallback already assigned");
 		OnLandedCallback = onLandedCallback;
-	}
-
-	public void StartFallingFrom(
-		GridPosition origin,
-		GridPosition destination,
-		System.Action<GridPosition, GridPosition> onLandedCallback)
-	{
-		Vector3 pos = myTransform.position;
-		pos.y = -origin.row;
-		myTransform.position = pos;
-
-		StartFall(destination, onLandedCallback);
-	}
-
-	public void TransferAnimationTo(Tile t)
-	{
-		t.myTransform.position = myTransform.position;
-		t.destination = destination;
-		t.isFalling = true;
-		t.OnLandedCallback = OnLandedCallback;
 	}
 }
