@@ -19,8 +19,15 @@ MonoBehaviour:
   - {r: 0.943, g: 0.86886114, b: 0.11463921, a: 1}
   - {r: 0.7192853, g: 0.0036172818, b: 0.879, a: 1}
   - {r: 0.9245283, g: 0.5102304, b: 0.039248828, a: 1}
-  clearColor: {r: 0.39275298, g: 0.936, b: 0.8038588, a: 1}
-  invalidMoveColor: {r: 0.504, g: 0.39312002, b: 0.39312002, a: 0}
+  sprites:
+  - {fileID: 2872820172547102848, guid: 05213c8b340ef411f86386b078bb91f2, type: 3}
+  - {fileID: 3384768068519940084, guid: 05213c8b340ef411f86386b078bb91f2, type: 3}
+  - {fileID: -5494593518133451, guid: 05213c8b340ef411f86386b078bb91f2, type: 3}
+  - {fileID: -3824454254573059864, guid: 05213c8b340ef411f86386b078bb91f2, type: 3}
+  - {fileID: -3878006856634611805, guid: 05213c8b340ef411f86386b078bb91f2, type: 3}
+  - {fileID: 5393546419404261946, guid: 05213c8b340ef411f86386b078bb91f2, type: 3}
+  clearColor: {r: 0.8349056, g: 1, b: 0.99314964, a: 1}
+  invalidMoveColor: {r: 0.7169812, g: 0.503916, b: 0.51443774, a: 1}
   fallingSpeed: 10
   clearAnimationTime: 0.1
   invalidMoveAnimationTime: 0.15

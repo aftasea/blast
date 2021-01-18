@@ -77,7 +77,8 @@ public class Board : MonoBehaviour
 		Tile t = Instantiate(tilePrefab, pos, Quaternion.identity, parentTransform);
 		GridPosition gridPosition = new GridPosition(row, column);
 		t.UpdatePosition(gridPosition);
-		t.UpdateColor(grid[row, column]);
+		//t.UpdateColor(grid[row, column]);
+		t.UpdateSprite(grid[row, column]);
 		tiles[row, column] = t;
 	}
 
@@ -207,7 +208,8 @@ public class Board : MonoBehaviour
 
 	private void DropTile(int r, int c, int rAbove)
 	{
-		tiles[r, c].UpdateColor(grid[rAbove, c]);
+		//tiles[r, c].UpdateColor(grid[rAbove, c]);
+		tiles[r, c].UpdateSprite(grid[rAbove, c]);
 
 		grid[r, c] = grid[rAbove, c];
 		grid[rAbove, c] = emptyCell;
@@ -238,7 +240,8 @@ public class Board : MonoBehaviour
 		int originRow = -(tileIndex + 1);
 
 		grid[destinationRow, c] = GetRandomTileIndex();
-		tiles[destinationRow, c].UpdateColor(grid[destinationRow, c]);
+		//tiles[destinationRow, c].UpdateColor(grid[destinationRow, c]);
+		tiles[destinationRow, c].UpdateSprite(grid[destinationRow, c]);
 		tiles[destinationRow, c].StartFallingFrom(
 			originRow,
 			destinationRow,

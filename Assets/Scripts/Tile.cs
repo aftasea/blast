@@ -61,6 +61,14 @@ public class Tile : MonoBehaviour
 		SetColor(config.colors[colorIndex]);
 	}
 
+	public void UpdateSprite(int spriteIndex)
+	{
+		if (spriteIndex < 0 || spriteIndex >= config.sprites.Length)
+			spriteIndex = 0;
+
+		SetSprite(config.sprites[spriteIndex]);
+	}
+
 	public void UpdatePosition(GridPosition pos)
 	{
 		gridPos = pos;
@@ -83,16 +91,21 @@ public class Tile : MonoBehaviour
 		tileColor = c;
 	}
 
+	public void SetSprite(Sprite s)
+	{
+		spriteRenderer.sprite = s;
+	}
+
 	public void ShowInvalidMove(System.Action onEffectEndCallback)
 	{
 		OnEffectEndCallback = onEffectEndCallback;
-		TemporaryTint(Color.gray, config.invalidMoveAnimationTime);
+		TemporaryTint(config.invalidMoveColor, config.invalidMoveAnimationTime);
 	}
 
 	public void Clear(System.Action onClearedCallback)
 	{
 		OnEffectEndCallback = onClearedCallback;
-		TemporaryTint(Color.cyan, config.clearAnimationTime);
+		TemporaryTint(config.clearColor, config.clearAnimationTime);
 	}
 
 	private void TemporaryTint(Color c, float time)
@@ -105,7 +118,8 @@ public class Tile : MonoBehaviour
 	{
 		yield return new WaitForSeconds(time);
 
-		spriteRenderer.color = tileColor;
+		//spriteRenderer.color = tileColor;
+		spriteRenderer.color = Color.white;
 
 		OnEffectEndCallback?.Invoke();
 		OnEffectEndCallback = null;

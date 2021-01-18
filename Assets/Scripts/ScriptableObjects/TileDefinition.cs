@@ -6,6 +6,7 @@ using UnityEngine;
 public class TileDefinition : ScriptableObject
 {
 	public Color[] colors = new Color[6];
+	public Sprite[] sprites = new Sprite[6];
 
 	[Space]
 
