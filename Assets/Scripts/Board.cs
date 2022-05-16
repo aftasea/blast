@@ -22,7 +22,7 @@ public class Board : MonoBehaviour
 
 	private int[,] grid;
 	private Tile[,] tiles;
-	private bool[,] checkedTiles;
+	private MatchCollector matchCollector = null;
 	private List<GridPosition> matches = new List<GridPosition>();
 	private int newTileCount;
 	private int tileFallingCount;
@@ -45,7 +45,8 @@ public class Board : MonoBehaviour
 	{
 		grid = new int[rows, columns];
 		tiles = new Tile[rows, columns];
-		checkedTiles = new bool[rows, columns];
+		matchCollector = new MatchCollector(this.grid);
+		matchCollector.Init(rows, columns);
 
 		Transform myTransform = transform;
 
@@ -85,12 +86,8 @@ public class Board : MonoBehaviour
 	private void DetectMatches(int row, int column)
 	{
 		Game.CurrentState = Game.State.ProcessingInput;
-
-		System.Array.Clear(checkedTiles, 0, checkedTiles.Length);
-		matches.Clear();
-
-		int tileType = grid[row, column];
-		CheckMatchFrom(row, column, tileType);
+		
+		matches = this.matchCollector.DetectMatches(row, column);
 
 		if (matches.Count >= minTilesToMatch)
 			ClearMatches();
@@ -101,39 +98,6 @@ public class Board : MonoBehaviour
 	private static void WaitForInput()
 	{
 		Game.CurrentState = Game.State.WaitingForInput;
-	}
-
-	private void CheckMatchFrom(int row, int column, int tileType)
-	{
-		if (HasTileAlreadyBeenChecked(row, column))
-			return;
-
-		// not the color I'm looking for
-		if (grid[row, column] != tileType)
-			return;
-
-		checkedTiles[row, column] = true;
-		matches.Add(new GridPosition(row, column));
-		
-		// Check left neighbour
-		if (column - 1 >= 0)
-			CheckMatchFrom(row, column - 1, tileType);
-
-		// Check right neighbour
-		if (column + 1 < level.columns)
-			CheckMatchFrom(row, column + 1, tileType);
-		
-		// Check top neighbour
-		if (row - 1 >= 0)
-			CheckMatchFrom(row - 1, column, tileType);
-
-		// Check bottom neighbour
-		if (row + 1 < level.rows)
-			CheckMatchFrom(row + 1, column, tileType);
-	}
-
-	private bool HasTileAlreadyBeenChecked(int row, int column) {
-		return checkedTiles[row, column];
 	}
 
 	private void ClearMatches()

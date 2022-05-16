@@ -62,16 +62,16 @@ public class Tile : MonoBehaviour
 		SetSprite(config.sprites[spriteIndex]);
 	}
 
+	private void SetSprite(Sprite s)
+	{
+		spriteRenderer.sprite = s;
+	}
+
 	private void UpdateName(GridPosition pos)
 	{
 #if UNITY_EDITOR
 		name = $"Tile_{pos.row}_{pos.col}";
 #endif
-	}
-
-	private void SetSprite(Sprite s)
-	{
-		spriteRenderer.sprite = s;
 	}
 
 	public void ShowInvalidMove(System.Action onEffectEndCallback)
