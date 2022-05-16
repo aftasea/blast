@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/TileColors")]
-public class TileDefinition : ScriptableObject
+[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/BlockDefinition")]
+public class BlockDefinition : ScriptableObject
 {
-	public Color[] colors = new Color[6];
 	public Sprite[] sprites = new Sprite[6];
 
 	[Space]

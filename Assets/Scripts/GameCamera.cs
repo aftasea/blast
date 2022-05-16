@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameCamera : MonoBehaviour
 {
@@ -23,11 +21,11 @@ public class GameCamera : MonoBehaviour
 
 	private void UpdateCamera()
 	{
-		UpdateOrtographicSize();
+		UpdateOrthographicSize();
 		UpdatePosition();
 	}
 
-	private void UpdateOrtographicSize()
+	private void UpdateOrthographicSize()
 	{
 		float gridAspectRatio = (float)level.columns / level.rows;
 
@@ -47,6 +45,7 @@ public class GameCamera : MonoBehaviour
 	{
 		float posX = level.columns / 2f;
 		float posY =  -level.rows / 2f;
-		cam.transform.position = new Vector3(posX, posY, cam.transform.position.z);
+		Transform t = cam.transform;
+		t.position = new Vector3(posX, posY, t.position.z);
 	}
 }

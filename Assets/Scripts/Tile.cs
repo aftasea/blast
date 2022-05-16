@@ -1,24 +1,19 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Text;
 
 public class Tile : MonoBehaviour
 {
 	[SerializeField]
-	private TileDefinition config = null;
+	private BlockDefinition config = null;
 
 	private SpriteRenderer spriteRenderer;
-
-	private GridPosition gridPos;
-	private Color tileColor;
 
 	private System.Action OnEffectEndCallback;
 	private System.Action OnLandedCallback;
 	private Transform myTransform;
 	private bool isFalling;
 
-	private int destinationRow;
+	private int destinationRowPosition;
 
 	private void Awake()
 	{
@@ -37,28 +32,26 @@ public class Tile : MonoBehaviour
 	private void UpdateFall()
 	{
 		Vector3 pos = myTransform.position;
-		float posToRow = -pos.y;
-		if (posToRow < destinationRow)
+		if (pos.y > destinationRowPosition)
 		{
-			pos.y -= config.fallingSpeed * Time.deltaTime;
+			float nextPos = pos.y - (config.fallingSpeed * Time.deltaTime);
+			pos.y = Mathf.Max(nextPos, destinationRowPosition);
 		}
 		else // landed
 		{
 			OnLandedCallback?.Invoke();
 			OnLandedCallback = null;
 			isFalling = false;
-			pos.y = -gridPos.row;
+			pos.y = destinationRowPosition;
 		}
 		
 		myTransform.position = pos;
 	}
 
-	public void UpdateColor(int colorIndex)
+	public void Init(int spriteIndex, GridPosition pos)
 	{
-		if (colorIndex < 0 || colorIndex >= config.colors.Length)
-			colorIndex = 0;
-
-		SetColor(config.colors[colorIndex]);
+		UpdateSprite(spriteIndex);
+		UpdateName(pos);
 	}
 
 	public void UpdateSprite(int spriteIndex)
@@ -69,29 +62,14 @@ public class Tile : MonoBehaviour
 		SetSprite(config.sprites[spriteIndex]);
 	}
 
-	public void UpdatePosition(GridPosition pos)
-	{
-		gridPos = pos;
-		UpdateName(pos);
-	}
-
 	private void UpdateName(GridPosition pos)
 	{
-		StringBuilder sb = new StringBuilder("Tile_");
-		sb.Append(pos.row);
-		sb.Append('_');
-		sb.Append(pos.col);
-
-		name = sb.ToString();
+#if UNITY_EDITOR
+		name = $"Tile_{pos.row}_{pos.col}";
+#endif
 	}
 
-	public void SetColor(Color c)
-	{
-		spriteRenderer.color = c;
-		tileColor = c;
-	}
-
-	public void SetSprite(Sprite s)
+	private void SetSprite(Sprite s)
 	{
 		spriteRenderer.sprite = s;
 	}
@@ -118,7 +96,6 @@ public class Tile : MonoBehaviour
 	{
 		yield return new WaitForSeconds(time);
 
-		//spriteRenderer.color = tileColor;
 		spriteRenderer.color = Color.white;
 
 		OnEffectEndCallback?.Invoke();
@@ -131,7 +108,7 @@ public class Tile : MonoBehaviour
 		pos.y = -originRow;
 		myTransform.position = pos;
 
-		this.destinationRow = destinationRow;
+		destinationRowPosition = -destinationRow;
 		isFalling = true;
 
 		if (OnLandedCallback != null)

@@ -1,6 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Board : MonoBehaviour
 {
@@ -13,10 +13,7 @@ public class Board : MonoBehaviour
 	private int minTilesToMatch = 2;
 
 
-	public LevelDefinition Level
-	{
-		get { return level; }
-	}
+	public LevelDefinition Level => level;
 
 	private const int emptyCell = -1;
 	private const int notFound = -1;
@@ -25,7 +22,7 @@ public class Board : MonoBehaviour
 
 	private int[,] grid;
 	private Tile[,] tiles;
-	private int[,] checkedTiles;
+	private bool[,] checkedTiles;
 	private List<GridPosition> matches = new List<GridPosition>();
 	private int newTileCount;
 	private int tileFallingCount;
@@ -48,7 +45,7 @@ public class Board : MonoBehaviour
 	{
 		grid = new int[rows, columns];
 		tiles = new Tile[rows, columns];
-		checkedTiles = new int[rows, columns];
+		checkedTiles = new bool[rows, columns];
 
 		Transform myTransform = transform;
 
@@ -56,7 +53,7 @@ public class Board : MonoBehaviour
 		{
 			for (int c = 0; c < columns; c++)
 			{
-				grid[r, c] = GetRandomTileIndex();
+				grid[r, c] = GetRandomBlockIndex();
 				CreateTile(r, c, myTransform);
 			}
 		}
@@ -76,15 +73,13 @@ public class Board : MonoBehaviour
 		Vector3 pos = new Vector3(column, -row, 0);
 		Tile t = Instantiate(tilePrefab, pos, Quaternion.identity, parentTransform);
 		GridPosition gridPosition = new GridPosition(row, column);
-		t.UpdatePosition(gridPosition);
-		//t.UpdateColor(grid[row, column]);
-		t.UpdateSprite(grid[row, column]);
+		t.Init(grid[row, column], gridPosition);
 		tiles[row, column] = t;
 	}
 
-	private int GetRandomTileIndex()
+	private int GetRandomBlockIndex()
 	{
-		return Random.Range(0, level.numberOfColors);
+		return Random.Range(0, level.numberOfBlocks);
 	}
 
 	private void DetectMatches(int row, int column)
@@ -103,22 +98,21 @@ public class Board : MonoBehaviour
 			tiles[row, column].ShowInvalidMove(WaitForInput);
 	}
 
-	private void WaitForInput()
+	private static void WaitForInput()
 	{
 		Game.CurrentState = Game.State.WaitingForInput;
 	}
 
 	private void CheckMatchFrom(int row, int column, int tileType)
 	{
-		// already checked
-		if (checkedTiles[row, column] == 1)
+		if (HasTileAlreadyBeenChecked(row, column))
 			return;
 
 		// not the color I'm looking for
 		if (grid[row, column] != tileType)
 			return;
 
-		checkedTiles[row, column] = 1;
+		checkedTiles[row, column] = true;
 		matches.Add(new GridPosition(row, column));
 		
 		// Check left neighbour
@@ -138,14 +132,19 @@ public class Board : MonoBehaviour
 			CheckMatchFrom(row + 1, column, tileType);
 	}
 
+	private bool HasTileAlreadyBeenChecked(int row, int column) {
+		return checkedTiles[row, column];
+	}
+
 	private void ClearMatches()
 	{
 		Game.CurrentState = Game.State.ClearingMatches;
 
-		for (int i = matches.Count - 1; i >=0; i--)
+		for (int i = matches.Count - 1; i >= 0; i--)
 		{
-			grid[matches[i].row, matches[i].col] = emptyCell;
-			tiles[matches[i].row, matches[i].col].Clear(OnTileCleared);
+			GridPosition pos = matches[i];
+			grid[pos.row, pos.col] = emptyCell;
+			tiles[pos.row, pos.col].Clear(OnTileCleared);
 		}
 	}
 
@@ -162,13 +161,13 @@ public class Board : MonoBehaviour
 
 		for (int c = level.columns - 1; c >= 0; c--)
 		{
-			CollectEmptyTilesInColumn(c);
+			CountEmptyTilesInColumn(c);
 			DropExistingTilesInColumn(c);
 			DropNewTilesInColumn(c);
 		}
 	}
 
-	private void CollectEmptyTilesInColumn(int c)
+	private void CountEmptyTilesInColumn(int c)
 	{
 		newTileCount = 0;
 
@@ -196,8 +195,8 @@ public class Board : MonoBehaviour
 
 	private int RowOfTileAbove(int r, int c)
 	{
-		// find first non empty tile above this one
-		for (int rAbove = r; rAbove >= 0; rAbove--)
+		// find first non empty tile above the given one
+		for (int rAbove = r - 1; rAbove >= 0; rAbove--)
 		{
 			if (grid[rAbove, c] != emptyCell)
 				return rAbove;
@@ -208,7 +207,6 @@ public class Board : MonoBehaviour
 
 	private void DropTile(int r, int c, int rAbove)
 	{
-		//tiles[r, c].UpdateColor(grid[rAbove, c]);
 		tiles[r, c].UpdateSprite(grid[rAbove, c]);
 
 		grid[r, c] = grid[rAbove, c];
@@ -234,19 +232,15 @@ public class Board : MonoBehaviour
 		}
 	}
 
-	private void DropNewTile(int c, int tileIndex)
+	private void DropNewTile(int c, int tileNumber)
 	{
-		int destinationRow = newTileCount - (tileIndex + 1);
-		int originRow = -(tileIndex + 1);
+		int destinationRow = newTileCount - (tileNumber + 1);
+		int originRow = -(tileNumber + 1);
 
-		grid[destinationRow, c] = GetRandomTileIndex();
-		//tiles[destinationRow, c].UpdateColor(grid[destinationRow, c]);
-		tiles[destinationRow, c].UpdateSprite(grid[destinationRow, c]);
-		tiles[destinationRow, c].StartFallingFrom(
-			originRow,
-			destinationRow,
-			UpdateLanded
-		);
+		grid[destinationRow, c] = GetRandomBlockIndex();
+		Tile newTile = tiles[destinationRow, c];
+		newTile.UpdateSprite(grid[destinationRow, c]);
+		newTile.StartFallingFrom(originRow, destinationRow, UpdateLanded);
 
 		tileFallingCount++;
 	}

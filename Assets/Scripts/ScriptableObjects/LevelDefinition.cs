@@ -12,5 +12,5 @@ public class LevelDefinition : ScriptableObject
 	public int columns = 5;
 
 	[Range(3, 6)]
-	public int numberOfColors = 3;
+	public int numberOfBlocks = 3;
 }
